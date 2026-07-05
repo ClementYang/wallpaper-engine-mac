@@ -11,13 +11,17 @@ jobs:
 
       - name: Build Project
         run: |
-          # 這裡直接寫死並用引號包裹帶有空格的正確 Scheme 名稱
-          xcodebuild -project "./Open Wallpaper Engine.xcodeproj" -scheme "Open Wallpaper Engine" -configuration Release -derivedDataPath build_output
+          # 加上 CODE_SIGNING_ALLOWED=NO 與 CODE_SIGN_IDENTITY="" 來繞過蘋果憑證檢查
+          xcodebuild -project "./Open Wallpaper Engine.xcodeproj" \
+                     -scheme "Open Wallpaper Engine" \
+                     -configuration Release \
+                     -derivedDataPath build_output \
+                     CODE_SIGNING_ALLOWED=NO \
+                     CODE_SIGNING_REQUIRED=NO \
+                     CODE_SIGN_IDENTITY=""
 
       - name: Upload Zip
         uses: actions/upload-artifact@v4
         with:
           name: Open-Wallpaper-Engine-App
           path: build_output/Build/Products/Release/
-
-
