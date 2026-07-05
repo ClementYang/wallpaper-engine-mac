@@ -9,22 +9,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Find and Build Project
+      - name: Build Project
         run: |
-          # 自動尋找資料夾下的 .xcodeproj 檔案
-          PROJ_PATH=$(find . -name "*.xcodeproj" -print -quit)
-          echo "Found project at: $PROJ_PATH"
-          
-          # 自動列出該專案所有的 Scheme，並取得第一個
-          SCHEME_NAME=$(xcodebuild -list -project "$PROJ_PATH" | grep -A 10 "Schemes:" | tail -n +2 | xargs | awk '{print $1}')
-          echo "Found scheme: $SCHEME_NAME"
-          
-          # 開始編譯
-          xcodebuild -project "$PROJ_PATH" -scheme "$SCHEME_NAME" -configuration Release -derivedDataPath build_output
+          # 這裡直接寫死並用引號包裹帶有空格的正確 Scheme 名稱
+          xcodebuild -project "./Open Wallpaper Engine.xcodeproj" -scheme "Open Wallpaper Engine" -configuration Release -derivedDataPath build_output
 
       - name: Upload Zip
         uses: actions/upload-artifact@v4
         with:
           name: Open-Wallpaper-Engine-App
           path: build_output/Build/Products/Release/
+
 
