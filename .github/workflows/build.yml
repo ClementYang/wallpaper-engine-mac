@@ -9,17 +9,22 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: 'latest-stable'
-
-      - name: Build Application
+      - name: Find and Build Project
         run: |
-          xcodebuild -project OpenWallpaperEngine.xcodeproj -scheme "Open Wallpaper Engine" -configuration Release -derivedDataPath build_output
+          # 自動尋找資料夾下的 .xcodeproj 檔案
+          PROJ_PATH=$(find . -name "*.xcodeproj" -print -quit)
+          echo "Found project at: $PROJ_PATH"
+          
+          # 自動列出該專案所有的 Scheme，並取得第一個
+          SCHEME_NAME=$(xcodebuild -list -project "$PROJ_PATH" | grep -A 10 "Schemes:" | tail -n +2 | xargs | awk '{print $1}')
+          echo "Found scheme: $SCHEME_NAME"
+          
+          # 開始編譯
+          xcodebuild -project "$PROJ_PATH" -scheme "$SCHEME_NAME" -configuration Release -derivedDataPath build_output
 
       - name: Upload Zip
         uses: actions/upload-artifact@v4
         with:
           name: Open-Wallpaper-Engine-App
-          path: build_output/Build/Products/Release/Open Wallpaper Engine.app
+          path: build_output/Build/Products/Release/
+
